@@ -1,0 +1,61 @@
+version: "3.9"
+services:
+
+  auth:
+    container_name: "api-auth"
+    build:
+      context: ./Api-Autenticacao
+      dockerfile: Dockerfile
+    ports:
+      - 3001:3001
+    depends_on:
+      - db
+    networks:
+      - mern-stack-net
+
+  loja:
+    container_name: "api-loja"
+    build:
+      context: ./Api-Loja
+      dockerfile: Dockerfile
+    ports:
+      - 3030:3030
+    depends_on:
+      - db
+    networks:
+      - mern-stack-net
+
+  front:
+    container_name: "mern-front"
+    build:
+      context: ./mern-store
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    depends_on:
+      - loja
+    networks:
+      - mern-stack-net
+
+
+  db:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    networks:
+      - mern-stack-net
+
+
+networks:
+  mern-stack-net:
+    driver: bridge
+
+volumes:
+  mongo-data:
+    driver: local
+
+
